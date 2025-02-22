@@ -5,28 +5,30 @@ GENERAL:
 GRAPHS:
   - name: graph1
     edges:
-      - name: edge1
+      - label: edge1
         source: A
         target: B
         edge_type: -->
         properties:
           strength: 0.5
           pvalue: 0.01
-      - name: edge2
+          color: green
+      - label: edge2
         source: B
         target: C
         edge_type: -->
         properties:
-          strength: 0.5
+          strength: -0.5
           pvalue: 0.001
-      - name: edge3
+          color: red
+      - label: edge3
         source: C
         target: E
         edge_type: o->
         properties:
           strength: 0.5
           pvalue: 0.0001
-      - name: edge4
+      - label: edge4
         source: B
         target: D
         edge_type: o-o

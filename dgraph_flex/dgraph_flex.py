@@ -11,6 +11,14 @@ import textwrap
 from glob import glob
 import yaml
 
+from graphviz import Digraph
+import matplotlib.pyplot as plt
+import networkx as nx
+import pandas as pd
+import numpy
+import seaborn as sns
+
+
 # from dotenv import dotenv_values  # pip install python-dotenv
 # import yaml # pip install pyyaml
 
@@ -37,10 +45,11 @@ class DgraphFlex:
         # initialize the graph
         self.graph = {}
         
+
         # load self.config
-        # self.config = {}
-        # for key, value in kwargs.items():
-        #     self.config[key] = value
+        self.config = {}
+        for key, value in kwargs.items():
+            self.config[key] = value
 
         # load the graph description from the yaml file
         # self.load_graph()
@@ -61,10 +70,107 @@ class DgraphFlex:
             
     def cmd(self, cmd):
         if cmd == 'plot':
-            self.plot()
+            self.read_yaml(self.config['yamlpath'])
+            self.load_graph()
             
+    def load_graph(self, graph=None, index=0):
+        """
+        Load a graph definition from a yaml file into a graphviz object
+        
+        
+        set the edge attributes starting from the first character to the third character
+        
+        --> == These indicate a direct causal influence. For example, A --> B means that variable A directly causes variable B
+        o-> == Indicates that either A causes B, or there's an unobserved confounder affecting both A and B, or both.
+        <-> == Indicates the presence of an unobserved confounder affecting both variables.
+        --- == These represent a relationship between variables, but the direction of causality is uncertain.
+        o-o == Indicates that either A causes B, B causes A, or there's an unobserved confounder, or any combination of these.
             
+        """    
+        
+        
+        # create the graph object
+        self.dot = Digraph( format='png')
+               
+        if graph is None:
+            # use the graph from the object
+            graph = self.graph
+            
+        # start with the edges in self.graph
+        for edge in graph['GRAPHS'][index]['edges']:
+
+            edge_attr = {
+                "dir": "both",
+                "label": "",
+            }
+            
+            # set default values for arrowhead and arrowtail
+            arrowhead = 'normal'
+            arrowtail = 'none'
+            
+            # set the arrowhead and arrowtail based on the edge type
+            if edge['edge_type'] == 'o->':
+                arrowtail='odot'
+            elif edge['edge_type'] == 'o-o':
+                arrowtail='odot'
+                arrowhead='odot'
+                
+            # create info structure to ease access to edge information
+            label = ''
+            color = 'black'
+            
+            if edge.get('properties',False):
+                if edge['properties'].get('strength', None) is not None:
+                    label = f"{edge['properties']['strength']}"
+                # check for pvalue
+                if edge['properties'].get('pvalue', None) is not None:
+                    label += f"\n{edge['properties']['pvalue']}"
+                if edge['properties'].get('color', None) is not None:
+                    color = edge['properties']['color']
+            # create the edge object
+            self.dot.edge(  edge['source'], edge['target'],
+                            arrowtail=arrowtail,
+                            arrowhead=arrowhead,
+                            dir='both',
+                            label=label,
+                            color=color,)
+                            #**edge_attr)
+                                    
+
+            pass
+            
+        # render
+        
+        print(self.dot.source)
+        
+        # save gv source
+        self.gv_source = self.dot.source
+        
+        self.dot.format = 'png'
+        self.dot.render(filename = 'dgflex',
+                        format='png',
+                        
+                        )
+        pass
     
+    def modify_existing_edge(self, dot, from_node, to_node, **kwargs):
+        """Modifies the attributes of an existing edge in a Graphviz graph.
+
+        Args:
+            dot: The Graphviz Graph object.
+            from_node: The name of the starting node of the edge.
+            to_node: The name of the ending node of the edge.
+            **kwargs: The attributes to modify (e.g., color='blue', style='dotted').
+        """
+
+        for edge in dot.body:
+            if edge.tail[0] == from_node and edge.head[0] == to_node:
+                for key, value in kwargs.items():
+                    edge.attr[key] = value
+                return  # Exit after modifying the edge
+
+        print(f"Edge from '{from_node}' to '{to_node}' not found.")
+            
 if __name__ == "__main__":
     
     # provide a description of the program with format control
