@@ -34,24 +34,27 @@ class DgraphFlex:
     
     def __init__(self, **kwargs):
         
+        # initialize the graph
+        self.graph = {}
+        
         # load self.config
-        self.config = {}
-        for key, value in kwargs.items():
-            self.config[key] = value
+        # self.config = {}
+        # for key, value in kwargs.items():
+        #     self.config[key] = value
 
         # load the graph description from the yaml file
-        self.load_graph()
+        # self.load_graph()
         
         pass
 
 
-    def read_yaml(self, version=1.0):
+    def read_yaml(self, yamlpath, version=1.0):
         "read in the yaml config file"
-        with open(self.yamlpath, 'r') as file:
+        with open(yamlpath, 'r') as file:
             self.graph = yaml.safe_load(file)
 
         if self.graph['GENERAL']['version'] > version:
-            print(f"Error: Supports up to {version}, this is version {self.cfg['GENERAL']['version']}")
+            print(f"Error: Supports up to {version}, this is version {self.graph['GENERAL']['version']}")
             sys.exit(1)
 
         return self.graph

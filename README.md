@@ -6,5 +6,5 @@ directed graphs and causal structure analysis.
 ## unit tests
 
 ```
-python -m unittest test_dgraph_flex.py 
+python -m unittest tests/*.py
 ```
