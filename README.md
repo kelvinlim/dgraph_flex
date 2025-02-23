@@ -31,7 +31,7 @@ GENERAL:
 GRAPHS:
   - name: graph1
     edges:
-      - label: edge1
+      - name: edge1
         source: A
         target: B
         edge_type: -->
@@ -39,7 +39,7 @@ GRAPHS:
           strength: 0.5
           pvalue: 0.01
           color: green
-      - label: edge2
+      - name: edge2
         source: B
         target: C
         edge_type: -->
@@ -47,18 +47,20 @@ GRAPHS:
           strength: -0.5
           pvalue: 0.001
           color: red
-      - label: edge3
+      - name: edge3
         source: C
         target: E
         edge_type: o->
         properties:
           strength: 0.5
           pvalue: 0.0001
-      - label: edge4
+      - name: edge4
         source: B
         target: D
         edge_type: o-o
         properties:
+
+
 
 ```
 Here is python code that reads in the graph and outputs a png
