@@ -2,3 +2,5 @@
 __pycache__/
 *.pyc
 dgraph_flex.egg-info/
+dist/
+
