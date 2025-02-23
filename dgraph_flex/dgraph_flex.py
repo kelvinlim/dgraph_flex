@@ -73,7 +73,7 @@ class DgraphFlex:
             self.read_yaml(self.config['yamlpath'])
             self.load_graph()
             
-    def load_graph(self, graph=None, index=0):
+    def load_graph(self, graph=None, index=0, plot_format='png',plot_name='dgflex'):
         """
         Load a graph definition from a yaml file into a graphviz object
         
@@ -90,10 +90,20 @@ class DgraphFlex:
         
         
         # create the graph object
-        self.dot = Digraph( format='png')
-               
+        self.dot = Digraph( format=plot_format)
+        
+        # if GENERAL|gvinit is present, set the graph attributes
+        if self.graph.get('GENERAL', False):
+            if self.graph['GENERAL'].get('gvinit', False):
+                # check for nodes
+                if 'nodes' in self.graph['GENERAL']['gvinit']:
+                    self.dot.node_attr.update(self.graph['GENERAL']['gvinit']['nodes'])
+                pass
+                # for key, value in self.graph['GENERAL']['gvinit'].items():
+                #     self.dot.attr(key, value)
+                    
         # set the node attributes
-        self.dot.attr('node', shape='oval')
+        #self.dot.attr('node', shape='oval')
         
         if graph is None:
             # use the graph from the object
@@ -128,8 +138,12 @@ class DgraphFlex:
                 # check for pvalue
                 if edge['properties'].get('pvalue', None) is not None:
                     label += f"\n{edge['properties']['pvalue']}"
-                if edge['properties'].get('color', None) is not None:
-                    color = edge['properties']['color']
+                
+            if edge.get('gvprops', False):
+                # set color    
+                if edge['gvprops'].get('color', None) is not None:
+                    color = edge['gvprops']['color']
+                    
             # create the edge object
             self.dot.edge(  edge['source'], edge['target'],
                             arrowtail=arrowtail,
@@ -149,9 +163,9 @@ class DgraphFlex:
         # save gv source
         self.gv_source = self.dot.source
         
-        self.dot.format = 'png'
-        self.dot.render(filename = 'dgflex',
-                        format='png',
+        self.dot.format = plot_format
+        self.dot.render(filename = plot_name,
+                        format=plot_format,
                         
                         )
         pass
