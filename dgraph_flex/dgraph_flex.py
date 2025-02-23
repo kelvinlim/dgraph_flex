@@ -28,11 +28,12 @@ import matplotlib.pyplot as plt
 
 """
 
-__version_info__ = ('0', '1', '0')
+__version_info__ = ('0', '1', '1')
 __version__ = '.'.join(__version_info__)
 
 version_history = \
 """
+0.1.1 - added GENERAL|gvinit to set graph attributes
 0.1.0 - initial version  
 """
     
