@@ -92,6 +92,9 @@ class DgraphFlex:
         # create the graph object
         self.dot = Digraph( format='png')
                
+        # set the node attributes
+        self.dot.attr('node', shape='oval')
+        
         if graph is None:
             # use the graph from the object
             graph = self.graph
