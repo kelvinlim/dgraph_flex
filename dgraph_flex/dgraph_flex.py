@@ -28,11 +28,12 @@ import matplotlib.pyplot as plt
 
 """
 
-__version_info__ = ('0', '1', '1')
+__version_info__ = ('0', '1', '2')
 __version__ = '.'.join(__version_info__)
 
 version_history = \
 """
+0.1.2 - default resolution of 300
 0.1.1 - added GENERAL|gvinit to set graph attributes
 0.1.0 - initial version  
 """
@@ -93,6 +94,10 @@ class DgraphFlex:
         # create the graph object
         self.dot = Digraph( format=plot_format)
         
+        # set default resolution of 600 
+        self.dot.format = 'png'   
+        self.dot.attr(dpi='300') 
+        
         # if GENERAL|gvinit is present, set the graph attributes
         if self.graph.get('GENERAL', False):
             if self.graph['GENERAL'].get('gvinit', False):
@@ -102,6 +107,7 @@ class DgraphFlex:
                 pass
                 # for key, value in self.graph['GENERAL']['gvinit'].items():
                 #     self.dot.attr(key, value)
+                
                     
         # set the node attributes
         #self.dot.attr('node', shape='oval')
