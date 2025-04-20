@@ -26,7 +26,7 @@ obj.save_graph(plot_format='png', plot_name='dgflex2')
 Here is the generated graph
 
 ![Example Graph](dgraph_flex/dgflex2.png)
-
+![Example Graph](https://github.com/kelvinlim/dgraph_flex/blob/main/dgraph_flex/dgflex2.png)
 ## sample yaml file
 Here is a sample yaml file describing a graph
 ```yaml
