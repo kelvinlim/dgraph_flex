@@ -399,7 +399,7 @@ if __name__ == "__main__":
     obj.cmd('plot')
 
     # create the graph object
-    obj = DgraphFlex(verbose=args.verbose)
+    obj = DgraphFlex()
     # add edges to graph object
     obj.add_edge('A', '-->', 'B', color='green', strength=-0.5, pvalue=0.01)
     obj.add_edge('B', '-->', 'C', color='red', strength=-.5, pvalue=0.001)
