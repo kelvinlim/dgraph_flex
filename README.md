@@ -24,6 +24,7 @@ obj.load_graph(res=96)  # set resolution for the graph
 obj.save_graph(plot_format='png', plot_name='dgflex2')
 ```
 Here is the generated graph
+
 ![Example Graph](https://github.com/kelvinlim/dgraph_flex/blob/main/dgraph_flex/dgflex2.png)
 
 ## sample yaml file
