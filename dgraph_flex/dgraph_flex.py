@@ -28,11 +28,66 @@ import matplotlib.pyplot as plt
 
 """
 
-__version_info__ = ('0', '1', '2')
+__version_info__ = ('0', '1', '3')
 __version__ = '.'.join(__version_info__)
 
 version_history = \
 """
+0.1.3 - have __init__ create the graph dict, new format for graph structure
+
+Example of the new format:
+GENERAL:
+  version: 2.0
+  framework: dgraph_flex
+  gvinit:  # global graphviz initialization
+    nodes:
+      shape: oval
+      color: black
+
+GRAPH:
+  edges: # Use indentation for the dictionary under 'edges'
+    "A --> B": # Key for the first edge
+      properties: # Indent for the 'properties' dictionary
+        strength: 0.5
+        pvalue: 0.01
+      gvprops: # Indent for the 'gvprops' dictionary
+        color: green
+    "B --> C": # Key for the second edge
+      properties: # Indent for 'properties'
+        strength: -0.5
+        pvalue: 0.001
+      gvprops: # Indent for 'gvprops'
+        color: red
+    "C o-> E": # Key for the third edge
+      properties: # Indent for 'properties'
+        strength: 0.5
+        pvalue: 0.0005
+      gvprops: # Indent for 'gvprops'
+        color: green
+    "B o-o D": # Key for the fourth edge
+      properties: # Indent for 'properties'
+        strength: 0.5
+        pvalue: 0.0005
+      gvprops: # Indent for 'gvprops'
+        color: black
+
+Example of how to use the object:
+
+from dgraph_flex import DgraphFlex
+
+# create the graph object
+obj = DgraphFlex(verbose=args.verbose)
+# add edges to graph object
+obj.add_edge('A', '-->', 'B', color='green', strength=-0.5, pvalue=0.01)
+obj.add_edge('B', '-->', 'C', color='red', strength=-.5, pvalue=0.001)
+obj.add_edge('C', 'o->', 'E', color='green', strength=0.5, pvalue=0.005)
+obj.add_edge('B', 'o-o', 'D')
+# load into graphviz object
+obj.load_graph()
+# save the graph to a file
+obj.save_graph(plot_format='png', plot_name='dgflex2')
+
+
 0.1.2 - default resolution of 300
 0.1.1 - added GENERAL|gvinit to set graph attributes
 0.1.0 - initial version  
@@ -45,7 +100,26 @@ class DgraphFlex:
     def __init__(self, **kwargs):
         
         # initialize the graph
-        self.graph = {}
+        self.graph = {
+            "GENERAL": {
+                "version": 2.0,
+                "framework": "dgraph_flex",
+                "gvinit": {
+                    "nodes": {
+                        "shape": "oval",
+                        "color": "black",
+                    },
+                    # "edges": {
+                    #     "color": "black",
+                    #     "style": "solid",
+                    # }
+                }
+            },
+            "GRAPH": {
+                "edges": {
+                }
+            }   
+        }
         
 
         # load self.config
@@ -56,10 +130,12 @@ class DgraphFlex:
         # load the graph description from the yaml file
         # self.load_graph()
         
+        # expose the edges 
+        self.edges = self.graph['GRAPH']['edges']
         pass
 
 
-    def read_yaml(self, yamlpath, version=1.0):
+    def read_yaml(self, yamlpath, version=2.0):
         "read in the yaml config file"
         with open(yamlpath, 'r') as file:
             self.graph = yaml.safe_load(file)
@@ -74,8 +150,9 @@ class DgraphFlex:
         if cmd == 'plot':
             self.read_yaml(self.config['yamlpath'])
             self.load_graph()
+            self.save_graph(plot_format='png', plot_name='dgflex')
             
-    def load_graph(self, graph=None, index=0, plot_format='png',plot_name='dgflex'):
+    def load_graph(self, graph=None, plot_format='png'):
         """
         Load a graph definition from a yaml file into a graphviz object
         
@@ -116,9 +193,10 @@ class DgraphFlex:
             # use the graph from the object
             graph = self.graph
             
+        edges = graph['GRAPH']['edges']
         # start with the edges in self.graph
-        for edge in graph['GRAPHS'][index]['edges']:
-
+        for name, edge in edges.items():
+            # edge is a tuple of (key, value)
             edge_attr = {
                 "dir": "both",
                 "label": "",
@@ -128,10 +206,12 @@ class DgraphFlex:
             arrowhead = 'normal'
             arrowtail = 'none'
             
+            # extract the source, edge_type and target from the key
+            source, edge_type, target = name.split(' ')
             # set the arrowhead and arrowtail based on the edge type
-            if edge['edge_type'] == 'o->':
+            if edge_type == 'o->':
                 arrowtail='odot'
-            elif edge['edge_type'] == 'o-o':
+            elif edge_type == 'o-o':
                 arrowtail='odot'
                 arrowhead='odot'
                 
@@ -152,7 +232,7 @@ class DgraphFlex:
                     color = edge['gvprops']['color']
                     
             # create the edge object
-            self.dot.edge(  edge['source'], edge['target'],
+            self.dot.edge(  source, target,
                             arrowtail=arrowtail,
                             arrowhead=arrowhead,
                             dir='both',
@@ -165,8 +245,15 @@ class DgraphFlex:
             
         # render
         
-        print(self.dot.source)
+        # print(self.dot.source)
         
+    def save_graph(self, plot_format='png', plot_name='dgflex'):
+        """
+        Save the graph to a file in the specified format.
+        Args:
+            plot_format: The format to save the graph in (e.g., 'png', 'pdf').
+            plot_name: The name of the output file (without extension).
+        """
         # save gv source
         self.gv_source = self.dot.source
         
@@ -177,6 +264,75 @@ class DgraphFlex:
                         )
         pass
     
+    def add_edge_lowlevel(self, src, edge_type, tar, **kwargs):
+        """Adds an edge to dgraph object.
+
+        Args:
+            src: The source node name.
+            edge_type: The type of edge (e.g., 'o->', 'o-o', '<->').
+            tar: The target node name.
+            **kwargs: Additional attributes for the edge (e.g., color='blue', style='dotted').
+        """
+        # Check if the edge already exists
+        if f"{src} {edge_type} {tar}" in self.edges:
+            print(f"Edge '{src} {edge_type} {tar}' already exists.")
+            raise ValueError(f"Edge '{src} {edge_type} {tar}' already exists.")
+            return
+        
+        # add the edge to the graph dictionary
+        # Check if the edge type is valid
+        if edge_type not in ['o->', 'o-o', '<->', '---','-->']:
+            print(f"Invalid edge type '{edge_type}'.")
+            raise ValueError(f"Invalid edge type '{edge_type}'.")
+            return
+        # Add the edge to the graph dictionary
+        if 'properties' not in kwargs:
+            kwargs['properties'] = {}
+        if 'gvprops' not in kwargs:
+            kwargs['gvprops'] = {}
+  
+
+        # Create the edge
+        self.edges[f"{src} {edge_type} {tar}"] = kwargs
+
+        pass
+
+    def add_edge(self, src, edge_type, tar, **kwargs):
+        """Adds an edge to the graph with the specified attributes.
+
+        Args:
+            src: The source node name.
+            edge_type: The type of edge (e.g., 'o->', 'o-o', '<->').
+            tar: The target node name.
+            **kwargs: Additional attributes for the edge (e.g., color='blue', style='dotted').
+        """
+        newargs = {
+            "gvprops": {
+                "color": "black",
+            },
+            "properties": {
+                "strength": None,
+                "pvalue": None,
+            }
+        }
+
+        # check if color is in kwargs
+        if 'color' in kwargs:
+            # set the color
+            newargs['gvprops']['color'] = kwargs['color']
+        # check if strength is in kwargs
+        if 'strength' in kwargs:
+            # set the strength
+            newargs['properties']['strength'] = kwargs['strength']
+        # check if pvalue is in kwargs
+        if 'pvalue' in kwargs:
+            # set the pvalue
+            newargs['properties']['pvalue'] = kwargs['pvalue']
+        self.add_edge_lowlevel(src, edge_type, tar, **newargs)
+        
+
+        
+        pass
     def modify_existing_edge(self, dot, from_node, to_node, **kwargs):
         """Modifies the attributes of an existing edge in a Graphviz graph.
 
@@ -209,7 +365,7 @@ if __name__ == "__main__":
         description=description, formatter_class=argparse.RawTextHelpFormatter)
 
     # handle a single file on command line argument
-    parser.add_argument('file',  type=str,  help='input file')
+    parser.add_argument('--file',  type=str,  help='input file')
     
 
         
@@ -237,3 +393,17 @@ if __name__ == "__main__":
     obj = DgraphFlex(  yamlpath = args.file, verbose = args.verbose)
 
     obj.cmd('plot')
+
+    # create the graph object
+    obj = DgraphFlex(verbose=args.verbose)
+    # add edges to graph object
+    obj.add_edge('A', '-->', 'B', color='green', strength=-0.5, pvalue=0.01)
+    obj.add_edge('B', '-->', 'C', color='red', strength=-.5, pvalue=0.001)
+    obj.add_edge('C', 'o->', 'E', color='green', strength=0.5, pvalue=0.005)
+    obj.add_edge('B', 'o-o', 'D')
+    # load into graphviz object
+    obj.load_graph()
+    # save the graph to a file
+    obj.save_graph(plot_format='png', plot_name='dgflex2')
+    pass
+

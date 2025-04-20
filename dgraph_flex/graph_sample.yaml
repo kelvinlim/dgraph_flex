@@ -1,44 +1,34 @@
 GENERAL:
-  version: 1.0
+  version: 2.0
   framework: dgraph_flex
   gvinit:  # global graphviz initialization
-    nodes: 
+    nodes:
       shape: oval
       color: black
 
-GRAPHS:
-  - name: graph1
-    edges:
-      - name: edge1
-        source: A
-        target: B
-        edge_type: -->
-        properties:
-          strength: 0.5
-          pvalue: 0.01
-        gvprops: # graphviz properties
-          color: green
-      - name: edge2
-        source: B
-        target: C
-        edge_type: -->
-        properties:
-          strength: -0.5
-          pvalue: 0.001
-        gvprops: # graphviz properties
-          color: red
-      - name: edge3
-        source: C
-        target: E
-        edge_type: o->
-        properties:
-          strength: 0.5
-          pvalue: 0.0005
-        gvprops: # graphviz properties
-          color: green
-      - name: edge4
-        source: B
-        target: D
-        edge_type: o-o
-        properties:
-
+GRAPH:
+  edges: # Use indentation for the dictionary under 'edges'
+    "A --> B": # Key for the first edge
+      properties: # Indent for the 'properties' dictionary
+        strength: 0.5
+        pvalue: 0.01
+      gvprops: # Indent for the 'gvprops' dictionary
+        color: green
+    "B --> C": # Key for the second edge
+      properties: # Indent for 'properties'
+        strength: -0.5
+        pvalue: 0.001
+      gvprops: # Indent for 'gvprops'
+        color: red
+    "C o-> E": # Key for the third edge
+      properties: # Indent for 'properties'
+        strength: 0.5
+        pvalue: 0.0005
+      gvprops: # Indent for 'gvprops'
+        color: green
+    "B o-o D": # Key for the fourth edge
+      properties: # Indent for 'properties'
+        strength: 0.5
+        pvalue: 0.0005
+      gvprops: # Indent for 'gvprops'
+        color: black
