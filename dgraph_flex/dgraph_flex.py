@@ -28,11 +28,24 @@ import matplotlib.pyplot as plt
 
 """
 
-__version_info__ = ('0', '1', '3')
+__version_info__ = ('0', '1', '4')
 __version__ = '.'.join(__version_info__)
 
 version_history = \
 """
+0.1.4 - add show_graph method to display graph in jupyter notebook
+
+from dgraph_flex import DgraphFlex
+
+obj = DgraphFlex()
+# add edges to graph object
+obj.add_edge('A', '-->', 'B', color='green', strength=-0.5, pvalue=0.01)
+obj.add_edge('B', '-->', 'C', color='red', strength=-.5, pvalue=0.001)
+obj.add_edge('C', 'o->', 'E', color='green', strength=0.5, pvalue=0.005)
+obj.add_edge('D', 'o->', 'B', color='purple')
+# load into graphviz object and render to window
+obj.show_graph()
+
 0.1.3 - have __init__ create the graph dict, new format for graph structure
 
 Example of the new format:
@@ -250,7 +263,16 @@ class DgraphFlex:
         # render
         
         # print(self.dot.source)
+    
+    def show_graph(self):
+        """
+        Display the graph in a Jupyter notebook.
+        """
+        # load the graph into the graphviz object
+        self.load_graph(res=72)
+        return self.dot
         
+
     def save_graph(self, plot_format='png', plot_name='dgflex'):
         """
         Save the graph to a file in the specified format.
