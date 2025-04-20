@@ -27,6 +27,21 @@ Here is the generated graph
 
 ![Example Graph](https://github.com/kelvinlim/dgraph_flex/blob/main/dgraph_flex/dgflex2.png)
 
+## for use in jupyter notebook
+
+```
+from dgraph_flex import DgraphFlex
+
+obj = DgraphFlex()
+# add edges to graph object
+obj.add_edge('A', '-->', 'B', color='green', strength=-0.5, pvalue=0.01)
+obj.add_edge('B', '-->', 'C', color='red', strength=-.5, pvalue=0.001)
+obj.add_edge('C', 'o->', 'E', color='green', strength=0.5, pvalue=0.005)
+obj.add_edge('D', 'o-o', 'B')
+# load into graphviz object and render to window
+obj.show_graph()
+
+```
 ## sample yaml file
 Here is a sample yaml file describing a graph
 ```yaml

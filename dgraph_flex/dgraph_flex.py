@@ -264,12 +264,16 @@ class DgraphFlex:
         
         # print(self.dot.source)
     
-    def show_graph(self):
+    def show_graph(self,format='png',res=72):
         """
         Display the graph in a Jupyter notebook.
         """
+        # Set the desired output format for Jupyter to PNG
+        import graphviz
+        # Set the format to PNG for Jupyter
+        graphviz.set_jupyter_format(format)
         # load the graph into the graphviz object
-        self.load_graph(res=72)
+        self.load_graph(res=res)
         return self.dot
         
 
