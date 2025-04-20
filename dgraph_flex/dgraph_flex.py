@@ -149,10 +149,10 @@ class DgraphFlex:
     def cmd(self, cmd):
         if cmd == 'plot':
             self.read_yaml(self.config['yamlpath'])
-            self.load_graph()
+            self.load_graph(res=100)
             self.save_graph(plot_format='png', plot_name='dgflex')
             
-    def load_graph(self, graph=None, plot_format='png'):
+    def load_graph(self, graph=None, plot_format='png',res=300):
         """
         Load a graph definition from a yaml file into a graphviz object
         
@@ -164,7 +164,11 @@ class DgraphFlex:
         <-> == Indicates the presence of an unobserved confounder affecting both variables.
         --- == These represent a relationship between variables, but the direction of causality is uncertain.
         o-o == Indicates that either A causes B, B causes A, or there's an unobserved confounder, or any combination of these.
-            
+        
+        args:
+            graph: The graph object to load. If None, uses the graph from the object.
+            plot_format: The format to save the graph in (e.g., 'png', 'pdf').
+            res: The resolution of the plot.
         """    
         
         
@@ -172,8 +176,8 @@ class DgraphFlex:
         self.dot = Digraph( format=plot_format)
         
         # set default resolution of 600 
-        self.dot.format = 'png'   
-        self.dot.attr(dpi='300') 
+        self.dot.format = plot_format   
+        self.dot.attr(dpi=str(res)) 
         
         # if GENERAL|gvinit is present, set the graph attributes
         if self.graph.get('GENERAL', False):
@@ -402,7 +406,7 @@ if __name__ == "__main__":
     obj.add_edge('C', 'o->', 'E', color='green', strength=0.5, pvalue=0.005)
     obj.add_edge('B', 'o-o', 'D')
     # load into graphviz object
-    obj.load_graph()
+    obj.load_graph(res=96)
     # save the graph to a file
     obj.save_graph(plot_format='png', plot_name='dgflex2')
     pass

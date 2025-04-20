@@ -12,6 +12,7 @@
             "program": "dgraph_flex/dgraph_flex.py",
             "console": "integratedTerminal",
             "args": [
+                "--file",
                 "dgraph_flex/graph_sample.yaml"
             ]
         }

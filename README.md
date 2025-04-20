@@ -19,7 +19,7 @@ obj.add_edge('B', '-->', 'C', color='red', strength=-.5, pvalue=0.001)
 obj.add_edge('C', 'o->', 'E', color='green', strength=0.5, pvalue=0.005)
 obj.add_edge('B', 'o-o', 'D')
 # load into graphviz object
-obj.load_graph()
+obj.load_graph(res=96)  # set resolution for the graph
 # save the graph to a file
 obj.save_graph(plot_format='png', plot_name='dgflex2')
 ```
