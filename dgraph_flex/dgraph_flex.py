@@ -337,7 +337,7 @@ class DgraphFlex:
 
         pass
 
-    def add_edge(self, src, edge_type, tar, **kwargs):
+    def add_edge(self, src, edge_type, tar,  **kwargs):
         """Adds an edge to the graph with the specified attributes.
 
         Args:
@@ -373,12 +373,14 @@ class DgraphFlex:
 
         
         pass
-    def modify_existing_edge(self, from_node, to_node, **kwargs):
+    def modify_existing_edge(self, from_node, to_node,
+                             format: str="0.3f",**kwargs):
         """Modifies the attributes of an existing edge in a Graphviz graph.
 
         Args:
             from_node: The name of the starting node of the edge.
             to_node: The name of the ending node of the edge.
+            format: The format for the strength and  pvalue (default is "0.3f").
             **kwargs: The attributes to modify (e.g., color='blue', style='dotted').
         """
 
@@ -394,13 +396,19 @@ class DgraphFlex:
                     if key == 'color':
                         self.graph['GRAPH']['edges'][edge]['gvprops']['color'] = value
                     elif key == 'strength':
+                        strength = self.graph['GRAPH']['edges'][edge]['properties']['strength']
+                        if isinstance(strength,float) and format:
+                            strength = f"{strength:.3f}"
                         self.graph['GRAPH']['edges'][edge]['properties']['strength'] = value
                     elif key == 'pvalue':
+                        pvalue = self.graph['GRAPH']['edges'][edge]['properties']['pvalue']
+                        if isinstance(pvalue,float) and format:
+                            strength = f"{pvalue:.3f}"
                         self.graph['GRAPH']['edges'][edge]['properties']['pvalue'] = value
 
                 return
-            else:
-                raise ValueError(f"Edge '{from_node} {type} {to_node}' not found.")
+            
+        raise ValueError(f"Edge '{from_node} {type} {to_node}' not found.")
 
         pass
             

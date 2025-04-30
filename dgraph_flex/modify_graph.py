@@ -10,10 +10,9 @@ obj.add_edge('D', 'o-o', 'B')
 
 
 # modify an existing edge
-obj.modify_existing_edge('A', 'B', color='blue', strength=0.2, pvalue=0.0001)
+obj.modify_existing_edge('A', 'B', color='blue', strength=1.0/3, pvalue=0.0001)
+obj.save_graph(plot_format='png', plot_name='dgflex_add1')
 
-# load into graphviz object
-#obj.load_graph(res=96)  # set resolution for the graph
-# save the graph to a file
-
-obj.save_graph(plot_format='png', plot_name='dgflex_add')
+# modify an existing edge
+obj.modify_existing_edge('A', 'B', color='red', strength="-.234", pvalue=0.0001)
+obj.save_graph(plot_format='png', plot_name='dgflex_add2')
