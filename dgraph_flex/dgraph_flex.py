@@ -28,11 +28,12 @@ import matplotlib.pyplot as plt
 
 """
 
-__version_info__ = ('0', '1', '4')
+__version_info__ = ('0', '1', '5')
 __version__ = '.'.join(__version_info__)
 
 version_history = \
 """
+0.1.5 - change modify_existing_edge to use self.dot object 
 0.1.4 - add show_graph method to display graph in jupyter notebook
 
 from dgraph_flex import DgraphFlex
@@ -145,6 +146,7 @@ class DgraphFlex:
         
         # expose the edges 
         self.edges = self.graph['GRAPH']['edges']
+
         pass
 
 
@@ -277,19 +279,27 @@ class DgraphFlex:
         return self.dot
         
 
-    def save_graph(self, plot_format='png', plot_name='dgflex'):
+    def save_graph(self, plot_format='png', plot_name='dgflex',res=300, cleanup=True):
         """
         Save the graph to a file in the specified format.
         Args:
             plot_format: The format to save the graph in (e.g., 'png', 'pdf').
             plot_name: The name of the output file (without extension).
         """
+        
+        self.load_graph(res=res)
         # save gv source
         self.gv_source = self.dot.source
-        
+        # save to a file with a .dot extension
+        with open(f"{plot_name}.dot", 'w') as f:
+            f.write(self.gv_source)
+
+
+
         self.dot.format = plot_format
         self.dot.render(filename = plot_name,
                         format=plot_format,
+                        cleanup=cleanup,
                         
                         )
         pass
@@ -363,23 +373,36 @@ class DgraphFlex:
 
         
         pass
-    def modify_existing_edge(self, dot, from_node, to_node, **kwargs):
+    def modify_existing_edge(self, from_node, to_node, **kwargs):
         """Modifies the attributes of an existing edge in a Graphviz graph.
 
         Args:
-            dot: The Graphviz Graph object.
             from_node: The name of the starting node of the edge.
             to_node: The name of the ending node of the edge.
             **kwargs: The attributes to modify (e.g., color='blue', style='dotted').
         """
 
-        for edge in dot.body:
-            if edge.tail[0] == from_node and edge.head[0] == to_node:
-                for key, value in kwargs.items():
-                    edge.attr[key] = value
-                return  # Exit after modifying the edge
 
-        print(f"Edge from '{from_node}' to '{to_node}' not found.")
+        for edge in self.graph['GRAPH']['edges'].keys():
+            # split the edge into its components
+            source, type, target = edge.split()
+
+            # check if the edge matches the from_node and to_node
+            if source == from_node and target == to_node:
+                # modify the edge attributes in kwargs
+                for key, value in kwargs.items():
+                    if key == 'color':
+                        self.graph['GRAPH']['edges'][edge]['gvprops']['color'] = value
+                    elif key == 'strength':
+                        self.graph['GRAPH']['edges'][edge]['properties']['strength'] = value
+                    elif key == 'pvalue':
+                        self.graph['GRAPH']['edges'][edge]['properties']['pvalue'] = value
+
+                return
+            else:
+                raise ValueError(f"Edge '{from_node} {type} {to_node}' not found.")
+
+        pass
             
 if __name__ == "__main__":
     
@@ -431,9 +454,7 @@ if __name__ == "__main__":
     obj.add_edge('B', '-->', 'C', color='red', strength=-.5, pvalue=0.001)
     obj.add_edge('C', 'o->', 'E', color='green', strength=0.5, pvalue=0.005)
     obj.add_edge('B', 'o-o', 'D')
-    # load into graphviz object
-    obj.load_graph(res=96)
     # save the graph to a file
-    obj.save_graph(plot_format='png', plot_name='dgflex2')
+    obj.save_graph(plot_format='png', plot_name='dgflex2',res=300)
     pass
 
