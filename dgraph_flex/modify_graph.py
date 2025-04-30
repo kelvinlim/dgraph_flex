@@ -6,6 +6,7 @@ obj.add_edge('A', '-->', 'B', color='green', strength=-0.5, pvalue=0.01)
 obj.add_edge('B', '-->', 'C', color='red', strength=-.5, pvalue=0.001)
 obj.add_edge('C', 'o->', 'E', color='green', strength=0.5, pvalue=0.005)
 obj.add_edge('D', 'o-o', 'B')
+obj.add_edge('F', '<->', 'B')
 
 
 

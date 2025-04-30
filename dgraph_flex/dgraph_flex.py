@@ -33,6 +33,7 @@ __version__ = '.'.join(__version_info__)
 
 version_history = \
 """
+0.1.6 - fixed bug with adding the <-> edge type
 0.1.5 - change modify_existing_edge to use self.dot object 
 0.1.4 - add show_graph method to display graph in jupyter notebook
 
@@ -233,6 +234,9 @@ class DgraphFlex:
             elif edge_type == 'o-o':
                 arrowtail='odot'
                 arrowhead='odot'
+            elif edge_type == '<->':
+                arrowtail='normal'
+
                 
             # create info structure to ease access to edge information
             label = ''
