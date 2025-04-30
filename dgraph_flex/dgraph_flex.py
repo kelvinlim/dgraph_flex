@@ -373,6 +373,7 @@ class DgraphFlex:
 
         
         pass
+
     def modify_existing_edge(self, from_node, to_node,
                              format: str="0.3f",**kwargs):
         """Modifies the attributes of an existing edge in a Graphviz graph.
@@ -383,7 +384,6 @@ class DgraphFlex:
             format: The format for the strength and  pvalue (default is "0.3f").
             **kwargs: The attributes to modify (e.g., color='blue', style='dotted').
         """
-
 
         for edge in self.graph['GRAPH']['edges'].keys():
             # split the edge into its components
@@ -396,15 +396,17 @@ class DgraphFlex:
                     if key == 'color':
                         self.graph['GRAPH']['edges'][edge]['gvprops']['color'] = value
                     elif key == 'strength':
-                        strength = self.graph['GRAPH']['edges'][edge]['properties']['strength']
+                        strength = value
                         if isinstance(strength,float) and format:
+                           # convert to string with 3 decimal places
                             strength = f"{strength:.3f}"
-                        self.graph['GRAPH']['edges'][edge]['properties']['strength'] = value
+                        self.graph['GRAPH']['edges'][edge]['properties']['strength'] = strength
                     elif key == 'pvalue':
-                        pvalue = self.graph['GRAPH']['edges'][edge]['properties']['pvalue']
+                        pvalue = value
                         if isinstance(pvalue,float) and format:
-                            strength = f"{pvalue:.3f}"
-                        self.graph['GRAPH']['edges'][edge]['properties']['pvalue'] = value
+                            # convert to string with 3 decimal places
+                            pvalue = f"{pvalue:.3f}"
+                        self.graph['GRAPH']['edges'][edge]['properties']['pvalue'] = pvalue
 
                 return
             
