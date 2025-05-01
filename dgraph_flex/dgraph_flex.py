@@ -28,11 +28,12 @@ import matplotlib.pyplot as plt
 
 """
 
-__version_info__ = ('0', '1', '5')
+__version_info__ = ('0', '1', '7')
 __version__ = '.'.join(__version_info__)
 
 version_history = \
 """
+0.1.7 - add add_edges method to add multiple edges at once
 0.1.6 - fixed bug with adding the <-> edge type
 0.1.5 - change modify_existing_edge to use self.dot object 
 0.1.4 - add show_graph method to display graph in jupyter notebook
@@ -378,6 +379,21 @@ class DgraphFlex:
         
         pass
 
+    def add_edges(self, edges):
+        """
+        Adds multiple edges to the graph.
+
+        Args:
+            edges: A list of strings, where each string contains 
+            the src edge and tar.  For example: ['A --> B', 'B o-> C', 'C o-o D']
+        """
+        for edge in edges:
+            src, edge_type, tar = edge[:3]
+            # kwargs = edge[3] if len(edge) > 3 else {}
+            kwargs = {}
+            self.add_edge(src, edge_type, tar, **kwargs)
+            
+        pass
     def modify_existing_edge(self, from_node, to_node,
                              format: str="0.3f",**kwargs):
         """Modifies the attributes of an existing edge in a Graphviz graph.
