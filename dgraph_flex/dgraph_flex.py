@@ -388,8 +388,7 @@ class DgraphFlex:
             the src edge and tar.  For example: ['A --> B', 'B o-> C', 'C o-o D']
         """
         for edge in edges:
-            src, edge_type, tar = edge[:3]
-            # kwargs = edge[3] if len(edge) > 3 else {}
+            src, edge_type, tar = edge.split()
             kwargs = {}
             self.add_edge(src, edge_type, tar, **kwargs)
             
