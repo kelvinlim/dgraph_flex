@@ -18,12 +18,13 @@ obj.add_edge('A', '-->', 'B', color='green', strength=-0.5, pvalue=0.01)
 obj.add_edge('B', '-->', 'C', color='red', strength=-.5, pvalue=0.001)
 obj.add_edge('C', 'o->', 'E', color='green', strength=0.5, pvalue=0.005)
 obj.add_edge('B', 'o-o', 'D')
+obj.add_edge('F', '<->', 'B')
 
 # to modify an existing edge
-obj.modify_existing_edge('A', 'B', color='blue', strength=0.2, pvalue=0.0001)
+obj.modify_existing_edge('A', 'B', color='green', strength=0.2, pvalue=0.0001)
 
-# save the graph to a file
-obj.save_graph(plot_format='png', plot_name='dgflex2',res=96)
+# save the graph to a file with high resolution of 300
+obj.save_graph(plot_format='png', plot_name='dgflex2',res=300)
 ```
 Here is the generated graph
 
@@ -40,7 +41,9 @@ obj.add_edge('A', '-->', 'B', color='green', strength=-0.5, pvalue=0.01)
 obj.add_edge('B', '-->', 'C', color='red', strength=-.5, pvalue=0.001)
 obj.add_edge('C', 'o->', 'E', color='green', strength=0.5, pvalue=0.005)
 obj.add_edge('D', 'o-o', 'B')
-# load into graphviz object and render to window
+obj.add_edge('F', '<->', 'B')
+
+# render to window
 obj.show_graph()
 
 ```
