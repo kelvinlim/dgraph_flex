@@ -28,11 +28,13 @@ import matplotlib.pyplot as plt
 
 """
 
-__version_info__ = ('0', '1', '7')
+__version_info__ = ('0', '1', '8')
 __version__ = '.'.join(__version_info__)
 
 version_history = \
 """
+0.1.8 - add exclude option to add_edges method to exclude certain edge types
+        add support for --- edge in load_graph method
 0.1.7 - add add_edges method to add multiple edges at once
 0.1.6 - fixed bug with adding the <-> edge type
 0.1.5 - change modify_existing_edge to use self.dot object 
@@ -237,6 +239,9 @@ class DgraphFlex:
                 arrowhead='odot'
             elif edge_type == '<->':
                 arrowtail='normal'
+            elif edge_type == '---':
+                arrowhead='none'
+                arrowtail='none'
 
                 
             # create info structure to ease access to edge information
@@ -314,7 +319,7 @@ class DgraphFlex:
 
         Args:
             src: The source node name.
-            edge_type: The type of edge (e.g., 'o->', 'o-o', '<->').
+            edge_type: The type of edge (e.g., '-->', 'o->', 'o-o', '<->','---').
             tar: The target node name.
             **kwargs: Additional attributes for the edge (e.g., color='blue', style='dotted').
         """
@@ -379,18 +384,20 @@ class DgraphFlex:
         
         pass
 
-    def add_edges(self, edges):
+    def add_edges(self, edges, exclude=[]):
         """
         Adds multiple edges to the graph.
 
         Args:
             edges: A list of strings, where each string contains 
-            the src edge and tar.  For example: ['A --> B', 'B o-> C', 'C o-o D']
+                the src edge and tar.  For example: ['A --> B', 'B o-> C', 'C o-o D']
+            exclude: A list of edge types to exclude (e.g., ['<->', '---']).
         """
         for edge in edges:
             src, edge_type, tar = edge.split()
-            kwargs = {}
-            self.add_edge(src, edge_type, tar, **kwargs)
+            if edge_type not in exclude:
+                kwargs = {}
+                self.add_edge(src, edge_type, tar, **kwargs)
             
         pass
     def modify_existing_edge(self, from_node, to_node,
