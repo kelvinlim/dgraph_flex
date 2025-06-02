@@ -1,6 +1,6 @@
 # dgraph_flex
 
-Package to support flexible storage of directed graphs, specifically for the support of 
+Package to support flexible storage of directed graphs, specifically for the support of
 directed graphs and causal structure analysis.
 
 Changed edges from a list to a dict using the edge name src --> tar
@@ -23,9 +23,13 @@ obj.add_edge('F', '<->', 'B')
 # to modify an existing edge
 obj.modify_existing_edge('A', 'B', color='green', strength=0.2, pvalue=0.0001)
 
-# save the graph to a file with high resolution of 300
-obj.save_graph(plot_format='png', plot_name='dgflex2',res=300)
+# Save the graph to a file 'sample_graph' with a default format of png and  resolution of 300
+# The format suffix is automatically added to the provided filename.  A graphviz source 'dot'
+# file is also generated. This can be edited and rerendered with the 'dot' command.
+
+obj.save_graph('sample_graph')
 ```
+
 Here is the generated graph
 
 ![Example Graph](https://github.com/kelvinlim/dgraph_flex/blob/main/dgraph_flex/dgflex2.png)
@@ -47,8 +51,11 @@ obj.add_edge('F', '<->', 'B')
 obj.show_graph()
 
 ```
+
 ## sample yaml file
+
 Here is a sample yaml file describing a graph
+
 ```yaml
 
 GENERAL:
@@ -87,6 +94,7 @@ GRAPH:
         color: black
 
 ```
+
 Here is python code that reads in the graph and outputs a png
 
 ```python

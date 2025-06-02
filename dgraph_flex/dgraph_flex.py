@@ -28,11 +28,12 @@ import matplotlib.pyplot as plt
 
 """
 
-__version_info__ = ('0', '1', '8')
+__version_info__ = ('0', '1', '9')
 __version__ = '.'.join(__version_info__)
 
 version_history = \
 """
+0.1.9 - change the 
 0.1.8 - add exclude option to add_edges method to exclude certain edge types
         add support for --- edge in load_graph method
 0.1.7 - add add_edges method to add multiple edges at once
@@ -289,25 +290,37 @@ class DgraphFlex:
         return self.dot
         
 
-    def save_graph(self, plot_format='png', plot_name='dgflex',res=300, cleanup=True):
+    def save_graph(self, 
+                   plot_pathname: str,
+                   plot_format: str ='png',
+                   res: int =300, 
+                   cleanup:bool =True):
         """
-        Save the graph to a file in the specified format.
+        Save the graph to a specified file in the specified format.
+        
+        This method renders the graph to a file with the specified pathname and format.
+        Both a graphics file ('png') and a Graphviz source file ('dot') are saved. The 
+        graphviz source file can be useful for further editing or inspection of the graph structure.
+        
         Args:
-            plot_format: The format to save the graph in (e.g., 'png', 'pdf').
-            plot_name: The name of the output file (without extension).
+            plot_pathname: The pathname of the output file (without extension).
+            plot_format: The format to save the graph in (e.g., 'png', 'pdf'). Defaults to 'png'.
+            res: The resolution of the plot. Defaults to 300.
+            cleanup: Whether to clean up the intermediate files after rendering. Defaults to True.
+
         """
         
         self.load_graph(res=res)
         # save gv source
         self.gv_source = self.dot.source
         # save to a file with a .dot extension
-        with open(f"{plot_name}.dot", 'w') as f:
+        with open(f"{plot_pathname}.dot", 'w') as f:
             f.write(self.gv_source)
 
 
 
         self.dot.format = plot_format
-        self.dot.render(filename = plot_name,
+        self.dot.render(filename = plot_pathname,
                         format=plot_format,
                         cleanup=cleanup,
                         
