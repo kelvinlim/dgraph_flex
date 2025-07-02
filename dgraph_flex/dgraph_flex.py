@@ -33,7 +33,7 @@ __version__ = '.'.join(__version_info__)
 
 version_history = \
 """
-0.1.9 - change the 
+0.1.9 - change the handling of arguments for save_graph
 0.1.8 - add exclude option to add_edges method to exclude certain edge types
         add support for --- edge in load_graph method
 0.1.7 - add add_edges method to add multiple edges at once
