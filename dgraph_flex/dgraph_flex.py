@@ -28,11 +28,12 @@ import matplotlib.pyplot as plt
 
 """
 
-__version_info__ = ('0', '1', '9')
+__version_info__ = ('0', '1', '10')
 __version__ = '.'.join(__version_info__)
 
 version_history = \
 """
+0.1.10 - add directed_only boolean to load_image, save_image, show_image to only load directed edges
 0.1.9 - change the handling of arguments for save_graph
 0.1.8 - add exclude option to add_edges method to exclude certain edge types
         add support for --- edge in load_graph method
@@ -172,7 +173,7 @@ class DgraphFlex:
             self.load_graph(res=100)
             self.save_graph(plot_format='png', plot_name='dgflex')
             
-    def load_graph(self, graph=None, plot_format='png',res=300):
+    def load_graph(self, graph=None, plot_format='png',res=300, directed_only=False):
         """
         Load a graph definition from a yaml file into a graphviz object
         
@@ -189,6 +190,7 @@ class DgraphFlex:
             graph: The graph object to load. If None, uses the graph from the object.
             plot_format: The format to save the graph in (e.g., 'png', 'pdf').
             res: The resolution of the plot.
+            directed_only: if True only load directed_edges e.g. -->, o->
         """    
         
         
@@ -220,6 +222,14 @@ class DgraphFlex:
         edges = graph['GRAPH']['edges']
         # start with the edges in self.graph
         for name, edge in edges.items():
+            
+            # extract the source, edge_type and target from the key
+            source, edge_type, target = name.split(' ')
+            
+            # check if directed_only
+            if directed_only and edge_type not in ['-->', 'o->']:
+                continue
+            
             # edge is a tuple of (key, value)
             edge_attr = {
                 "dir": "both",
@@ -230,8 +240,7 @@ class DgraphFlex:
             arrowhead = 'normal'
             arrowtail = 'none'
             
-            # extract the source, edge_type and target from the key
-            source, edge_type, target = name.split(' ')
+
             # set the arrowhead and arrowtail based on the edge type
             if edge_type == 'o->':
                 arrowtail='odot'
@@ -277,7 +286,7 @@ class DgraphFlex:
         
         # print(self.dot.source)
     
-    def show_graph(self,format='png',res=72):
+    def show_graph(self,format='png',res=72, directed_only=False):
         """
         Display the graph in a Jupyter notebook.
         """
@@ -286,7 +295,7 @@ class DgraphFlex:
         # Set the format to PNG for Jupyter
         graphviz.set_jupyter_format(format)
         # load the graph into the graphviz object
-        self.load_graph(res=res)
+        self.load_graph(res=res,directed_only=directed_only)
         return self.dot
         
 
@@ -294,7 +303,8 @@ class DgraphFlex:
                    plot_pathname: str,
                    plot_format: str ='png',
                    res: int =300, 
-                   cleanup:bool =True):
+                   cleanup:bool =True,
+                   directed_only = False):
         """
         Save the graph to a specified file in the specified format.
         
@@ -310,7 +320,7 @@ class DgraphFlex:
 
         """
         
-        self.load_graph(res=res)
+        self.load_graph(res=res, directed_only=directed_only)
         # save gv source
         self.gv_source = self.dot.source
         # save to a file with a .dot extension
