@@ -16,8 +16,11 @@ obj.add_edges(edges)
 
 # to modify an existing edge
 obj.modify_existing_edge('A', 'B', color='green', strength=0.2, pvalue=0.0001)
-obj.save_graph(plot_format='png', plot_name='dgraph_flex/dgflex2')
+obj.modify_existing_edge('F', 'G', color='blue', strength=-0.3, pvalue=0.05)
+obj.modify_existing_edge('F', 'I', color='blue', strength=-0.3, pvalue=0.05)
+obj.save_graph('dgraph_flex/dgflex2')
+#obj.save_graph(plot_format='png', plot_name='dgraph_flex/dgflex2')
 
 # modify an existing edge
 obj.modify_existing_edge('A', 'B', color='red', strength="-.234", pvalue=0.0001)
-obj.save_graph(plot_format='png', plot_name='dgflex_add2')
+obj.save_graph('dgflex_add2')

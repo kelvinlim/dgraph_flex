@@ -28,11 +28,14 @@ import matplotlib.pyplot as plt
 
 """
 
-__version_info__ = ('0', '1', '10')
+__version_info__ = ('0', '1', '11')
 __version__ = '.'.join(__version_info__)
 
 version_history = \
 """
+0.1.11 - in modify_existing_edge, if edge doesn't exist skip instead of raising an error.
+        This is to support using a subset of edges in graph (e.g. ancestors) but
+        still use the full graph SEM results to modify the edges.
 0.1.10 - add directed_only boolean to load_image, save_image, show_image to only load directed edges
 0.1.9 - change the handling of arguments for save_graph
 0.1.8 - add exclude option to add_edges method to exclude certain edge types
@@ -458,8 +461,11 @@ class DgraphFlex:
                         self.graph['GRAPH']['edges'][edge]['properties']['pvalue'] = pvalue
 
                 return
-            
-        raise ValueError(f"Edge '{from_node} {type} {to_node}' not found.")
+        
+        # instead of raising an error, just skip if edge not found and give a warning
+        print(f"Warning: Edge '{from_node} {type} {to_node}' not found. Skipping modification.")
+        
+        #raise ValueError(f"Edge '{from_node} {type} {to_node}' not found.")
 
         pass
             
