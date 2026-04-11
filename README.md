@@ -8,7 +8,7 @@ to make it easier to address, query and set
 
 ## sample usage
 
-```
+```python
 from dgraph_flex import DgraphFlex
 
 # create the graph object
@@ -36,7 +36,9 @@ Here is the generated graph
 
 ## for use in jupyter notebook
 
-```
+### Graphviz (static)
+
+```python
 from dgraph_flex import DgraphFlex
 
 obj = DgraphFlex()
@@ -49,7 +51,41 @@ obj.add_edge('F', '<->', 'B')
 
 # render to window
 obj.show_graph()
+```
 
+### Excalidraw (interactive)
+
+`show_excalidraw()` renders the graph as an interactive SVG canvas inline in the
+notebook. You can pan, zoom, and drag nodes. No additional dependencies or CDN
+access required — the visualization is fully self-contained.
+
+```python
+from dgraph_flex import DgraphFlex
+
+obj = DgraphFlex()
+obj.add_edge('A', '-->', 'B', color='green', strength=-0.5, pvalue=0.01)
+obj.add_edge('B', '-->', 'C', color='red', strength=-.5, pvalue=0.001)
+obj.add_edge('C', 'o->', 'E', color='green', strength=0.5, pvalue=0.005)
+obj.add_edge('D', 'o-o', 'B')
+
+# interactive canvas in notebook
+obj.show_excalidraw()
+
+# read-only view with custom height
+obj.show_excalidraw(view_mode=True, height="400px")
+
+# only show directed edges (-->, o->)
+obj.show_excalidraw(directed_only=True)
+```
+
+You can also export the graph to Excalidraw format:
+
+```python
+# save as .excalidraw file (can be opened at excalidraw.com)
+obj.save_excalidraw('my_graph')
+
+# get raw Excalidraw JSON dict
+data = obj.to_excalidraw()
 ```
 
 ## sample yaml file
